@@ -70,7 +70,7 @@ cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
 optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 
 training_epochs = 50
-batch_size = 100
+batch_size = 50
 
 
 #save
