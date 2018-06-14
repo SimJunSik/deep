@@ -24,44 +24,42 @@ Y = tf.placeholder(tf.float32, [None, num_of_class])
 keep_prob = tf.placeholder(tf.float32)
 
 
-W1 = tf.Variable(tf.random_normal([3, 3, channel, 32], stddev=5e-2))
+W1 = tf.Variable(tf.random_normal([3, 3, channel, 32], stddev=0.01))
 L1 = tf.nn.conv2d(X_img, W1, strides=[1, 1, 1, 1], padding='SAME')
 L1 = tf.nn.relu(L1)
 L1 = tf.nn.max_pool(L1, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 
-W2 = tf.Variable(tf.random_normal([3, 3, 32, 64], stddev=5e-2))
+W2 = tf.Variable(tf.random_normal([3, 3, 32, 64], stddev=0.01))
 L2 = tf.nn.conv2d(L1, W2, strides=[1, 1, 1, 1], padding='SAME')
 L2 = tf.nn.relu(L2)
 L2 = tf.nn.max_pool(L2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 
 
-W3 = tf.Variable(tf.random_normal([3, 3, 64, 128], stddev=5e-2))
+W3 = tf.Variable(tf.random_normal([3, 3, 64, 128], stddev=0.01))
 L3 = tf.nn.conv2d(L2, W3, strides=[1, 1, 1, 1], padding='SAME')
 L3 = tf.nn.relu(L3)
 #L3 = tf.nn.max_pool(L3, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 
 
-W4 = tf.Variable(tf.random_normal([3, 3, 128, 128], stddev=5e-2))
+W4 = tf.Variable(tf.random_normal([3, 3, 128, 128], stddev=0.01))
 L4 = tf.nn.conv2d(L3, W4, strides=[1, 1, 1, 1], padding='SAME')
 L4 = tf.nn.relu(L4)
 
 
+"""
 #stddev = 0.01
-W5 = tf.Variable(tf.random_normal([3, 3, 128, 128], stddev=5e-2))
+W5 = tf.Variable(tf.random_normal([3, 3, 128, 128], stddev=0.01))
 L5 = tf.nn.conv2d(L4, W5, strides=[1, 1, 1, 1], padding='SAME')
 L5 = tf.nn.relu(L5)
+"""
 
 
-
-L5_flat = tf.reshape(L5, [-1, (width//4) * (height//4) * 128])
-W6 = tf.get_variable("W6", shape=[(width//4) * (height//4) * 128, num_of_class], initializer=tf.contrib.layers.xavier_initializer())
+L4_flat = tf.reshape(L4, [-1, (width//4) * (height//4) * 128])
+W5 = tf.get_variable("W5", shape=[(width//4) * (height//4) * 128, num_of_class], initializer=tf.contrib.layers.xavier_initializer())
 b = tf.Variable(tf.random_normal([num_of_class]))
 
-#h_fc1 =  tf.nn.relu(tf.matmul(L3_flat, W4) + b)
-#h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
-#logits = tf.matmul(h_fc1_drop,W4) + b
 
-logits = tf.matmul(L5_flat,W6) + b
+logits = tf.matmul(L4_flat,W5) + b
 
 
 # define cost/loss &amp;amp;amp; optimizer
@@ -95,7 +93,7 @@ for epoch in range(training_epochs):
         feed_dict = {X: batch_xs, Y: batch_ys, keep_prob : 0.8}
         c, _ = sess.run([cost, optimizer], feed_dict=feed_dict)
         avg_cost += c / total_batch
-        #saver.save(session, 'dogs-cats-model')
+        saver.save(sess, './model')
 
     print('Epoch:', '%04d' % (epoch + 1), 'cost =', '{:.9f}'.format(avg_cost))
 
